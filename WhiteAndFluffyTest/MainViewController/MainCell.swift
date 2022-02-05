@@ -47,10 +47,6 @@ class MainCell: UICollectionViewCell {
         photo.kf.indicatorType = .activity
         downloadTask = KF.url(url)
             .set(to: photo)
-
-        guard let urlFullPhoto = URL(string: (model.urls.full)) else { return }
-        let resource = ImageResource(downloadURL: urlFullPhoto)
-        KingfisherManager.shared.retrieveImage(with: resource) { image in }
     }
         
     private func setupUI() {

@@ -24,3 +24,4 @@ class DetailCoordinator: CoordinatorProtocol {
         self.detailViewController = detailViewController
     }
 }
+

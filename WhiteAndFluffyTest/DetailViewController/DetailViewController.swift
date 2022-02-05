@@ -3,6 +3,10 @@ import Kingfisher
 
 class DetailViewController: UIViewController {
     
+    deinit {
+        KingfisherManager.shared.cache.clearMemoryCache()
+    }
+    
     // MARK: - views
     var imageOutlet: UIImageView = {
         let image = UIImageView()
@@ -60,6 +64,7 @@ class DetailViewController: UIViewController {
     // MARK: viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         setupScreen()
         configureUI()
         setUIConstraints()

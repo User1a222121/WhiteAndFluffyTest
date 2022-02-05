@@ -33,7 +33,6 @@ class MainViewController: UIViewController, UISearchControllerDelegate {
     private let networkService = NetworkService()
     var resultData: [ResultData] = []
     private var filterResultData: [ResultData] = []
-    private var totalPhoto = 0
     weak var delegate: MainViewControllerDelegate?
     private let itemsPerRow: CGFloat = 1
     private let sectionInsets = UIEdgeInsets(
@@ -57,12 +56,11 @@ class MainViewController: UIViewController, UISearchControllerDelegate {
         setupNavigationBar()
         setupUI()
         
-        networkService.requestRandomPhotos(page: 1) { (result) in
+        networkService.requestRandomPhotos(page: 1) { [weak self] (result) in
             switch result {
             case .success(let data):
-                self.resultData = data.results
-                self.totalPhoto = data.total
-                self.collectionView.reloadData()
+                self?.resultData = data.results
+                self?.collectionView.reloadData()
             case .failure(let error):
                 print("Error received requesting data: \(error.localizedDescription)")
                 let alertVC = UIAlertController(
@@ -71,7 +69,7 @@ class MainViewController: UIViewController, UISearchControllerDelegate {
                             preferredStyle: .alert)
                         let action = UIAlertAction(title: "OK", style: .default, handler: nil)
                         alertVC.addAction(action)
-                        self.present(alertVC, animated: true, completion: nil)
+                self?.present(alertVC, animated: true, completion: nil)
             }
         }
     }
@@ -110,18 +108,17 @@ class MainViewController: UIViewController, UISearchControllerDelegate {
         return layout
     }
     
-    
     // MARK: - func
     private func fetchPhoto(ofIndex index: Int) {
-        
+
         guard index % 10 == 0 else { return }
         let pageNumber = (index / 10)
         guard resultData.count/10 == pageNumber else { return }
-        networkService.requestRandomPhotos(page: pageNumber + 1) { (result) in
+        networkService.requestRandomPhotos(page: pageNumber + 1) { [weak self] (result) in
             switch result {
             case .success(let data):
-                self.resultData.append(contentsOf: data.results)
-                self.collectionView.reloadData()
+                self?.resultData.append(contentsOf: data.results)
+                self?.collectionView.reloadData()
                 
             case .failure(let error):
                 print("Error received requesting data: \(error.localizedDescription)")
@@ -131,7 +128,7 @@ class MainViewController: UIViewController, UISearchControllerDelegate {
                             preferredStyle: .alert)
                         let action = UIAlertAction(title: "OK", style: .default, handler: nil)
                         alertVC.addAction(action)
-                        self.present(alertVC, animated: true, completion: nil)
+                        self?.present(alertVC, animated: true, completion: nil)
             }
         }
     }
@@ -144,22 +141,26 @@ extension MainViewController: UICollectionViewDelegate, UICollectionViewDataSour
         if isFiltering {
             return filterResultData.count
         } else {
-            return totalPhoto
+            return resultData.count
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MainCell.reuseId, for: indexPath) as! MainCell
         
-        let data: ResultData
-        if isFiltering {
-            data = filterResultData[indexPath.item]
-        } else {
-            data = resultData[indexPath.item]
-        }
-        cell.setCell(with: data)
+        if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MainCell.reuseId, for: indexPath) as? MainCell {
+            
+            
+            let data: ResultData
+            if isFiltering {
+                data = filterResultData[indexPath.item]
+            } else {
+                data = resultData[indexPath.item]
+            }
+            cell.setCell(with: data)
 
-        return cell
+            return cell
+        }
+        return UICollectionViewCell()
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -206,11 +207,11 @@ extension MainViewController: UICollectionViewDelegateFlowLayout {
 // MARK: extension UISearchResultsUpdating
 extension MainViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        networkService.requestSearchPhotos(query: searchController.searchBar.text!) { (result) in
+        networkService.requestSearchPhotos(query: searchController.searchBar.text!) { [weak self] (result) in
             switch result {
             case .success(let data):
-                self.filterResultData = data.results
-                self.collectionView.reloadData()
+                self?.filterResultData = data.results
+                self?.collectionView.reloadData()
             case .failure(let error):
                 print("Error received requesting data: \(error.localizedDescription)")
                 let alertVC = UIAlertController(
@@ -219,7 +220,7 @@ extension MainViewController: UISearchResultsUpdating {
                             preferredStyle: .alert)
                         let action = UIAlertAction(title: "OK", style: .default, handler: nil)
                         alertVC.addAction(action)
-                        self.present(alertVC, animated: true, completion: nil)
+                        self?.present(alertVC, animated: true, completion: nil)
             }
         }
     }
@@ -236,7 +237,7 @@ extension MainViewController: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         
         for indexPath in indexPaths {
-                self.fetchPhoto(ofIndex: indexPath.item + 5)
+                self.fetchPhoto(ofIndex: indexPath.item + 7)
         }
     }
 }

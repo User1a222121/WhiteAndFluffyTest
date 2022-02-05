@@ -38,11 +38,11 @@ class FavoritesViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        networkService.requestLikedPhotos { (result) in
+        networkService.requestLikedPhotos { [weak self] (result) in
             switch result {
             case .success(let data):
-                self.favoritesPhotoData = data
-                    self.tableView.reloadData()
+                self?.favoritesPhotoData = data
+                self?.tableView.reloadData()
             case .failure(let error):
                 print("Error received requesting data: \(error.localizedDescription)")
                 let alertVC = UIAlertController(
@@ -51,7 +51,7 @@ class FavoritesViewController: UIViewController {
                             preferredStyle: .alert)
                         let action = UIAlertAction(title: "OK", style: .default, handler: nil)
                         alertVC.addAction(action)
-                        self.present(alertVC, animated: true, completion: nil)
+                self?.present(alertVC, animated: true, completion: nil)
             }
         }
     }
