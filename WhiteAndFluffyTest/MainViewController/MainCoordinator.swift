@@ -11,7 +11,6 @@ final class MainCoordinator: CoordinatorProtocol {
     private let window: UIWindow
     private lazy var tabBarController = UITabBarController()
     private lazy var navigationControllers = MainCoordinator.makeNavigationControllers()
-    private var detailCoordinator: DetailCoordinator?
 
     // init
     init(window: UIWindow) {
@@ -68,9 +67,9 @@ extension MainCoordinator: MainViewControllerDelegate {
     func mainViewControllerDidSelectPhoto(_ selectedPhoto: ResultData) {
         
         guard let navigationController = navigationControllers[.photos] else { return }
-        let detailCoordinator = DetailCoordinator(presenter: navigationController, photo: selectedPhoto)
-        detailCoordinator.start()
-        self.detailCoordinator = detailCoordinator
+        let detailVC = DetailViewController()
+        detailVC.currentPhotoData = selectedPhoto
+        navigationController.pushViewController(detailVC, animated: true)
     }
 }
 
@@ -80,9 +79,9 @@ extension MainCoordinator: FavoritesViewControllerDelegate {
     func favoritesViewControllerDidSelectPhoto(_ selectedPhoto: ResultData) {
         
         guard let navigationController = navigationControllers[.favorites] else { return }
-        let detailCoordinator = DetailCoordinator(presenter: navigationController, photo: selectedPhoto)
-        detailCoordinator.start()
-        self.detailCoordinator = detailCoordinator
+        let detailVC = DetailViewController()
+        detailVC.currentPhotoData = selectedPhoto
+        navigationController.pushViewController(detailVC, animated: true)
     }
 }
 

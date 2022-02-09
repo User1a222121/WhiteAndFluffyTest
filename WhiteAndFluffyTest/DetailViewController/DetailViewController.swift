@@ -3,10 +3,6 @@ import Kingfisher
 
 class DetailViewController: UIViewController {
     
-    deinit {
-        KingfisherManager.shared.cache.clearMemoryCache()
-    }
-    
     // MARK: - views
     var imageOutlet: UIImageView = {
         let image = UIImageView()

@@ -30,6 +30,7 @@ class MainViewController: UIViewController, UISearchControllerDelegate {
     }()
     
     // MARK: - Properties
+    
     private let networkService = NetworkService()
     var resultData: [ResultData] = []
     private var filterResultData: [ResultData] = []
